@@ -1,9 +1,23 @@
 import express from "express";
 
+import sequelize from "./db";
+
 const app = express();
 
-const PORT = 5100;
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, ()=>{
-    console.log(`Server has started on PORT ${PORT} 🚀🚀🚀`);
-});
+const start = async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+    app.listen(PORT, () =>
+      // eslint-disable-next-line no-console
+      console.log(`Server has started on PORT ${PORT} 🚀🚀🚀`),
+    );
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+};
+
+start();
