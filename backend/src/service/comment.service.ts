@@ -22,15 +22,32 @@ class CommentService {
     }
   }
 
-  public async getById(commentId: string): Promise<void> {
+  public async getById(commentId: string): Promise<IComment | null> {
     try {
-      await CommentModel.findOne({
+      const comment = await CommentModel.findOne({
         where: { id: commentId },
+      });
+      return comment.toJSON();
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async update(
+    commentId: string,
+    data: Partial<IComment>,
+  ): Promise<void> {
+    try {
+      await CommentModel.update(data, {
+        where: {
+          id: commentId,
+        },
       });
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
   }
+
   public async delete(commentId: string): Promise<void> {
     try {
       await CommentModel.destroy({

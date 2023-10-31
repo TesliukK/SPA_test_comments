@@ -43,6 +43,26 @@ class CommentController {
       next(e);
     }
   }
+
+  public async update(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<IComment>> {
+    try {
+      const { params, body } = req;
+
+      const updatedComment = await commentService.update(
+        params.commentId,
+        body,
+      );
+
+      return res.status(201).json(updatedComment);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   public async delete(
     req: Request,
     res: Response,

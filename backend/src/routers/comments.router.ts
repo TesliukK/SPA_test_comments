@@ -5,7 +5,9 @@ import { commentController } from "../controllers";
 const router = Router();
 router.get("/", commentController.getAll);
 
-router.get("/:userId", commentController.getById);
+router.get("/:commentId", commentController.getById);
+
+router.put("/:commentId", commentController.update);
 
 router.post("/", commentController.create);
 
