@@ -1,12 +1,14 @@
 import { Sequelize } from "sequelize";
 
+import { configs } from "./config";
+
 const sequelize = new Sequelize({
-  database: process.env.DB_NAME as string,
-  username: "root",
-  password: "root",
-  host: process.env.DB_HOST as string,
-  port: parseInt(process.env.DB_PORT as string, 10),
-  dialect: "mysql", // Діалект бази даних (MySQL)
+  database: configs.DB_NAME,
+  username: configs.DB_USER,
+  password: configs.DB_PASSWORD,
+  host: configs.DB_HOST,
+  port: parseInt(configs.DB_PORT, 10),
+  dialect: "mysql",
 });
 
 export default sequelize;
