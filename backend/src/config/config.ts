@@ -9,4 +9,7 @@ export const configs = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_NAME: process.env.DB_NAME,
   DB_PORT: process.env.DB_PORT,
+
+  ACCESS_SECRET: process.env.ACCESS_SECRET,
+  REFRESH_SECRET: process.env.REFRESH_SECRET,
 };
