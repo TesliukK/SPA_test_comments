@@ -28,7 +28,6 @@ class AuthService {
         credentials.password,
         user.password,
       );
-
       if (!isMatched) {
         throw new ApiError("Invalid email or password", 409);
       }
@@ -39,7 +38,7 @@ class AuthService {
       });
 
       await TokenModel.create({
-        _user_id: user.id,
+        userId: user.id,
         ...tokenPair,
       });
 

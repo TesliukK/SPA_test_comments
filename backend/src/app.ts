@@ -2,13 +2,14 @@ import express from "express";
 
 import { configs } from "./config";
 import sequelize from "./db";
-import { commentRouter } from "./routers";
+import { authRouter, commentRouter } from "./routers";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/comments", commentRouter);
+app.use("/auth", authRouter);
 
 const start = async () => {
   try {
