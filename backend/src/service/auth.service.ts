@@ -1,7 +1,7 @@
 import { ApiError } from "../errors";
 import { UserModel } from "../models";
 import TokenModel from "../models/token.model";
-import { ICredentials, ITokenPair, IUser } from "../types";
+import { ICredentials, ITokenPair, ITokenPayload, IUser } from "../types";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 
@@ -43,6 +43,66 @@ class AuthService {
       });
 
       return tokenPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async refresh(
+    tokenInfo: ITokenPair,
+    jwtPayload: ITokenPayload,
+  ): Promise<ITokenPair> {
+    try {
+      const tokenPair = tokenService.generateTokenPair({
+        id: jwtPayload.id,
+        name: jwtPayload.name,
+      });
+      await Promise.all([
+        TokenModel.create({ userId: jwtPayload.id, ...tokenPair }),
+        TokenModel.destroy({ where: { refreshToken: tokenInfo.refreshToken } }),
+      ]);
+
+      return tokenPair;
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+
+  public async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    try {
+      const user = await UserModel.findOne({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!user) {
+        throw new ApiError("User not found", 404);
+      }
+
+      const userInstance = user.get({ plain: true });
+      const isMatched = await passwordService.compare(
+        oldPassword,
+        userInstance.password,
+      );
+
+      if (!isMatched) {
+        throw new ApiError("Wrong old password", 400);
+      }
+
+      const hashedNewPassword = await passwordService.hash(newPassword);
+      await UserModel.update(
+        { password: hashedNewPassword },
+        {
+          where: {
+            id: userId,
+          },
+        },
+      );
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }

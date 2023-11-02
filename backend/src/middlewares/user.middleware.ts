@@ -62,15 +62,12 @@ class UserMiddleware {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
         const fieldValue = req[from][fieldName];
-
         const user = await UserModel.findOne({ [dbField]: fieldValue });
 
         if (!user) {
           return next(new ApiError(`User not found`, 422));
         }
-
         req.res.locals = { user };
-
         next();
       } catch (e) {
         next(e);
