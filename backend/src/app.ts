@@ -3,6 +3,7 @@ import express from "express";
 import { configs } from "./config";
 import sequelize from "./db";
 import { authRouter, commentRouter } from "./routers";
+import { userRouter } from "./routers/user.router";
 
 const app = express();
 app.use(express.json());
@@ -10,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/comments", commentRouter);
 app.use("/auth", authRouter);
-
+app.use("/users", userRouter);
 const start = async () => {
   try {
     await sequelize.authenticate();

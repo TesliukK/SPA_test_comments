@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ETokenType } from "../enums";
+import { EActionTokenType, ETokenType } from "../enums";
 import { ApiError } from "../errors";
+import { ActionModel } from "../models";
 import TokenModel from "../models/token.model";
-import { tokenService } from "../service/token.service";
+import { tokenService } from "../service";
 
 class AuthMiddleware {
   public async checkAccessToken(
@@ -56,26 +57,26 @@ class AuthMiddleware {
     }
   }
 
-  // public checkActionToken(type: EActionTokenType) {
-  //   return async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-  //       const actionToken = req.params.token;
-  //       if (!actionToken) {
-  //         return next(new ApiError("No token", 401));
-  //       }
-  //       const jwtPayload = tokenService.checkActionToken(actionToken, type);
-  //       const tokenInfo = await Action.findOne({ actionToken });
-  //
-  //       if (!tokenInfo) {
-  //         return next(new ApiError("Token not valid", 401));
-  //       }
-  //       req.res.locals = { tokenInfo, jwtPayload };
-  //       next();
-  //     } catch (e) {
-  //       next(e);
-  //     }
-  //   };
-  // }
+  public checkActionToken(type: EActionTokenType) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const actionToken = req.params.token;
+        if (!actionToken) {
+          return next(new ApiError("No token", 401));
+        }
+        const jwtPayload = tokenService.checkActionToken(actionToken, type);
+        const tokenInfo = await ActionModel.findOne({ where: { actionToken } });
+
+        if (!tokenInfo) {
+          return next(new ApiError("Token not valid", 401));
+        }
+        req.res.locals = { tokenInfo, jwtPayload };
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
+  }
 
   // public async checkOldPassword(
   //   req: Request,

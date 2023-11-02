@@ -3,7 +3,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "../db";
 import { UserModel } from "./user.model";
 
-const ActionModel = sequelize.define("actionToken", {
+export const ActionModel = sequelize.define("actionToken", {
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -21,5 +21,3 @@ const ActionModel = sequelize.define("actionToken", {
     allowNull: false,
   },
 });
-
-export default ActionModel;
