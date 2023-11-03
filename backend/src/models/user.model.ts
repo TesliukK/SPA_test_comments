@@ -3,9 +3,8 @@ import { DataTypes } from "sequelize";
 import sequelize from "../db";
 import { EUserStatus } from "../enums";
 
-export const UserModel = sequelize.define("user", {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING, unique: true },
+const UserModel = sequelize.define("user", {
+  nameUser: { type: DataTypes.STRING, unique: true },
   email: { type: DataTypes.STRING },
   password: { type: DataTypes.STRING },
   status: {
@@ -17,3 +16,5 @@ export const UserModel = sequelize.define("user", {
     defaultValue: EUserStatus.Inactive,
   },
 });
+
+export { UserModel };

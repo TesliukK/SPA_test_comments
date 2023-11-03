@@ -1,5 +1,5 @@
 import { ApiError } from "../errors";
-import { CommentModel } from "../models/comment.model";
+import { CommentModel } from "../models";
 import { IComment } from "../types";
 
 class CommentService {
@@ -12,15 +12,26 @@ class CommentService {
     }
   }
 
-  public async create(data: IComment): Promise<any> {
+  public async create(data: IComment, userId: number): Promise<any> {
     try {
       return await CommentModel.create({
         ...data,
+        userId: userId,
       });
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
   }
+
+  // public async create(data: IComment): Promise<any> {
+  //   try {
+  //     return await CommentModel.create({
+  //       ...data,
+  //     });
+  //   } catch (e) {
+  //     throw new ApiError(e.message, e.status);
+  //   }
+  // }
 
   public async getById(commentId: string): Promise<IComment | null> {
     try {

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
+import TokenModel from "../models/token.model";
 import { commentService } from "../service";
 import { IComment, ICommonResponse } from "../types";
 
@@ -23,7 +24,14 @@ class CommentController {
     next: NextFunction,
   ): Promise<Response<ICommonResponse<IComment>>> {
     try {
-      const comment = await commentService.create(req.body);
+      const accessToken = req.get("Authorization");
+      const tokenInfo = await TokenModel.findOne({
+        where: { accessToken: accessToken },
+      });
+
+      const userId = tokenInfo.get("userId") as number;
+
+      const comment = await commentService.create(req.body, userId);
       return res.status(201).json(comment);
     } catch (e) {
       next(e);

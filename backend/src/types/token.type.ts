@@ -5,6 +5,6 @@ export interface ITokenPair {
   refreshToken: string;
 }
 
-export type ITokenPayload = Pick<IUser, "id" | "name">;
+export type ITokenPayload = Pick<IUser, "id" | "nameUser">;
 
 export type IActionTokenPayload = Pick<ITokenPayload, "id">;

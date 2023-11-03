@@ -2,7 +2,7 @@ import { EUserStatus } from "../enums";
 
 export interface IUser {
   id?: number;
-  name: string;
+  nameUser: string;
   email: string;
   password: string;
   status: EUserStatus;

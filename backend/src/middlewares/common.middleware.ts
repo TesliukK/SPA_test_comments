@@ -1,5 +1,7 @@
-// import {NextFunction} from "express";
-// import {ApiError} from "../errors";
+import { NextFunction, Request, Response } from "express";
+import { ObjectSchema } from "joi";
+
+import { ApiError } from "../errors";
 
 class CommonMiddleware {
   // public isIdValid(idField: string, from: "params" | "query" = "params") {
@@ -14,19 +16,19 @@ class CommonMiddleware {
   //     }
   //   };
   // }
-  // public isBodyValid(validator: ObjectSchema) {
-  //   return (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-  //       const { error, value } = validator.validate(req.body);
-  //       if (error) {
-  //         throw new ApiError(error.message, 404);
-  //       }
-  //       req.body = value;
-  //       next();
-  //     } catch (e) {
-  //       next(e);
-  //     }
-  //   };
-  // }
+  public isBodyValid(validator: ObjectSchema) {
+    return (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { error, value } = validator.validate(req.body);
+        if (error) {
+          throw new ApiError(error.message, 404);
+        }
+        Object.assign(req.body, value);
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
+  }
 }
 export const commonMiddleware = new CommonMiddleware();

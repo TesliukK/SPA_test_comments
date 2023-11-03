@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
+import { UserModel } from "../models";
 import { authService } from "../service";
 import { ITokenPair, ITokenPayload } from "../types";
 
@@ -20,8 +21,13 @@ class AuthController {
   ): Promise<Response<ITokenPair>> {
     try {
       const { email, password } = req.body;
-      const { user } = res.locals;
-      const tokenPair = await authService.login({ email, password }, user);
+      const user = await UserModel.findOne({
+        where: { email: email },
+      });
+      const tokenPair = await authService.login(
+        { email, password },
+        user.toJSON(),
+      );
 
       return res.status(200).json(tokenPair);
     } catch (e) {

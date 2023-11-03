@@ -63,7 +63,6 @@ class UserMiddleware {
       try {
         const fieldValue = req[from][fieldName];
         const user = await UserModel.findOne({ [dbField]: fieldValue });
-
         if (!user) {
           return next(new ApiError(`User not found`, 422));
         }

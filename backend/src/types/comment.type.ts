@@ -1,6 +1,6 @@
+import { IUser } from "./user.type";
+
 export interface IComment {
-  id: number;
-  username: string;
-  email: string;
   text: string;
+  userId: IUser;
 }
