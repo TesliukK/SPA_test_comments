@@ -30,9 +30,15 @@ class CommentController {
       });
 
       const userId = tokenInfo.get("userId") as number;
+      const parentId = req.body.parentId || null;
 
-      const comment = await commentService.create(req.body, userId);
-      return res.status(201).json(comment);
+      const comment = await commentService.create(req.body, userId, parentId);
+
+      const commentWithReplies = await commentService.getById(
+        comment.id.toString(),
+      );
+
+      return res.status(201).json(commentWithReplies);
     } catch (e) {
       next(e);
     }

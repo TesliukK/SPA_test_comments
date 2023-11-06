@@ -12,26 +12,23 @@ class CommentService {
     }
   }
 
-  public async create(data: IComment, userId: number): Promise<any> {
+  public async create(
+    data: IComment,
+    userId: number,
+    parentId?: number,
+  ): Promise<any> {
     try {
-      return await CommentModel.create({
+      const commentData = {
         ...data,
         userId: userId,
-      });
+        parentId: parentId || null,
+      };
+
+      return await CommentModel.create(commentData);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
   }
-
-  // public async create(data: IComment): Promise<any> {
-  //   try {
-  //     return await CommentModel.create({
-  //       ...data,
-  //     });
-  //   } catch (e) {
-  //     throw new ApiError(e.message, e.status);
-  //   }
-  // }
 
   public async getById(commentId: string): Promise<IComment | null> {
     try {

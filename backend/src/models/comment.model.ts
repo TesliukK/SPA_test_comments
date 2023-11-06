@@ -16,10 +16,23 @@ const CommentModel = sequelize.define("comment", {
       key: "id",
     },
   },
+  parentId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  file: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 CommentModel.belongsTo(UserModel, {
   foreignKey: "userId",
+});
+
+CommentModel.hasMany(CommentModel, {
+  foreignKey: "parentId",
+  as: "replies",
 });
 
 export { CommentModel };
