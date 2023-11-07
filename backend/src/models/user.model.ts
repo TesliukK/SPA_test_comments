@@ -5,7 +5,7 @@ import { EUserStatus } from "../enums";
 
 const UserModel = sequelize.define("user", {
   nameUser: { type: DataTypes.STRING, unique: true },
-  email: { type: DataTypes.STRING },
+  email: { type: DataTypes.STRING, unique: true },
   password: { type: DataTypes.STRING },
   status: {
     type: DataTypes.ENUM(

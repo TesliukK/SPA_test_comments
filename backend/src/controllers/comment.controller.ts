@@ -33,7 +33,6 @@ class CommentController {
       const parentId = req.body.parentId || null;
 
       const comment = await commentService.create(req.body, userId, parentId);
-
       const commentWithReplies = await commentService.getById(
         comment.id.toString(),
       );

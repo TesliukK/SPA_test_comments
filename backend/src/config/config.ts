@@ -27,4 +27,7 @@ export const configs = {
   AWS_S3_NAME: process.env.AWS_S3_NAME,
   AWS_S3_REGION: process.env.AWS_S3_REGION,
   AWS_S3_URL: process.env.AWS_S3_URL,
+
+  RECAPTCHA_SITE_KEY: process.env.YOUR_RECAPTCHA_SITE_KEY,
+  RECAPTCHA_SECRET_KEY: process.env.YOUR_RECAPTCHA_SECRET_KEY,
 };

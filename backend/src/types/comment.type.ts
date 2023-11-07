@@ -5,5 +5,4 @@ export interface IComment {
   text: string;
   userId: IUser;
   replies: IComment[];
-  file: string;
 }

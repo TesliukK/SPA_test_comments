@@ -20,10 +20,6 @@ const CommentModel = sequelize.define("comment", {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  file: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
 });
 
 CommentModel.belongsTo(UserModel, {
