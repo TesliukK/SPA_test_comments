@@ -37,7 +37,11 @@ class UserMiddleware {
       try {
         const fieldValue = req[from][fieldName];
 
-        const user = await UserModel.findOne({ [dbField]: fieldValue });
+        const user = await UserModel.findOne({
+          where: {
+            [dbField]: fieldValue,
+          },
+        });
 
         if (user) {
           return next(

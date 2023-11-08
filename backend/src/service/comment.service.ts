@@ -1,12 +1,47 @@
+import { OrderItem } from "sequelize";
+
 import { ApiError } from "../errors";
 import { CommentModel } from "../models";
 import { IComment } from "../types";
 
+interface IPaginationResponse<T> {
+  page: number;
+  perPage: number;
+  itemsCount: number;
+  itemsFound: number;
+  data: T[];
+}
 class CommentService {
-  public async getAll(): Promise<IComment[]> {
+  public async getAll(
+    page: number = 1,
+    limit: number = 10,
+    sortFields: string[] = ["createdAt"],
+    sortOrder: "asc" | "desc" = "asc",
+  ): Promise<IPaginationResponse<IComment>> {
     try {
-      const comments = await CommentModel.findAll();
-      return comments.map((comment) => comment.toJSON());
+      const offset = (page - 1) * limit;
+      const order: OrderItem[] = sortFields.map((field) => [field, sortOrder]);
+
+      const comments = await CommentModel.findAndCountAll({
+        offset,
+        limit,
+        order,
+      });
+
+      const commentArray: IComment[] = comments.rows.map(
+        (comment) => comment.get() as IComment,
+      );
+
+      // Створіть об'єкт пагінації
+      const pagination: IPaginationResponse<IComment> = {
+        page,
+        perPage: limit,
+        itemsCount: commentArray.length,
+        itemsFound: comments.count,
+        data: commentArray,
+      };
+
+      return pagination;
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }

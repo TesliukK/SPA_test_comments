@@ -1,21 +1,35 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectSchema } from "joi";
+import { Model, ModelCtor } from "sequelize";
 
 import { ApiError } from "../errors";
 
 class CommonMiddleware {
-  // public isIdValid(idField: string, from: "params" | "query" = "params") {
-  //   return (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-  //       if (!isObjectIdOrHexString(req[from][idField])) {
-  //         throw new ApiError("ID not valid", 400);
-  //       }
-  //       next();
-  //     } catch (e) {
-  //       next(e);
-  //     }
-  //   };
-  // }
+  public isIdValid(
+    model: ModelCtor<Model>,
+    idField: string,
+    from: "params" | "query" = "params",
+  ) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const id = req[from][idField] as string;
+
+        if (!id) {
+          throw new ApiError("ID is missing", 400);
+        }
+
+        const instance = await model.findByPk(id);
+
+        if (!instance) {
+          throw new ApiError("Resource not found", 404);
+        }
+
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
+  }
   public isBodyValid(validator: ObjectSchema) {
     return (req: Request, res: Response, next: NextFunction) => {
       try {

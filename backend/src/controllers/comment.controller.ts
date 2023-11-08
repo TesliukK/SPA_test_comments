@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import TokenModel from "../models/token.model";
 import { commentService } from "../service";
-import { IComment, ICommonResponse } from "../types";
+import { IComment, ICommonResponse, ITokenPayload } from "../types";
 
 class CommentController {
   public async getAll(
@@ -11,8 +10,21 @@ class CommentController {
     next: NextFunction,
   ): Promise<Response<IComment[]>> {
     try {
-      const comments = await commentService.getAll();
-      return res.json(comments);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 25;
+      const sortFields = (
+        (req.query.sortFields as string) || "createdAt"
+      ).split(",") as string[];
+      const sortOrder = (req.query.sortOrder as "asc" | "desc") || "asc";
+
+      const paginationResponse = await commentService.getAll(
+        page,
+        limit,
+        sortFields,
+        sortOrder,
+      );
+
+      return res.json(paginationResponse);
     } catch (e) {
       next(e);
     }
@@ -24,15 +36,10 @@ class CommentController {
     next: NextFunction,
   ): Promise<Response<ICommonResponse<IComment>>> {
     try {
-      const accessToken = req.get("Authorization");
-      const tokenInfo = await TokenModel.findOne({
-        where: { accessToken: accessToken },
-      });
-
-      const userId = tokenInfo.get("userId") as number;
+      const { id } = req.res.locals.jwtPayload as ITokenPayload;
       const parentId = req.body.parentId || null;
 
-      const comment = await commentService.create(req.body, userId, parentId);
+      const comment = await commentService.create(req.body, id, parentId);
       const commentWithReplies = await commentService.getById(
         comment.id.toString(),
       );

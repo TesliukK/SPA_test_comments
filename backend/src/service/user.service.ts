@@ -1,5 +1,5 @@
 import { ApiError } from "../errors";
-import { CommentModel, UserModel } from "../models";
+import { UserModel } from "../models";
 import { IUser } from "../types";
 
 class UserService {
@@ -37,7 +37,7 @@ class UserService {
 
   public async delete(userId: string): Promise<void> {
     try {
-      await CommentModel.destroy({
+      await UserModel.destroy({
         where: { id: userId },
       });
     } catch (e) {

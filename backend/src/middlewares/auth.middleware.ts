@@ -3,8 +3,9 @@ import { NextFunction, Request, Response } from "express";
 import { EActionTokenType, ETokenType } from "../enums";
 import { ApiError } from "../errors";
 import { ActionModel } from "../models";
+import OldPasswordModel from "../models/old.password.model";
 import TokenModel from "../models/token.model";
-import { tokenService } from "../service";
+import { passwordService, tokenService } from "../service";
 
 class AuthMiddleware {
   public async checkAccessToken(
@@ -78,40 +79,42 @@ class AuthMiddleware {
     };
   }
 
-  // public async checkOldPassword(
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction,
-  // ) {
-  //   try {
-  //     const { body } = req;
-  //     const { tokenInfo } = req.res.locals;
-  //
-  //     const oldPasswords = await OldPassword.find({
-  //       _user_id: tokenInfo._user_id,
-  //     });
-  //
-  //     if (!oldPasswords) return next();
-  //
-  //     await Promise.all(
-  //       oldPasswords.map(async (record) => {
-  //         const isMatched = await passwordService.compare(
-  //           body.password,
-  //           record.password,
-  //         );
-  //         if (isMatched) {
-  //           throw new ApiError(
-  //             "Your new password is the same as your old!",
-  //             409,
-  //           );
-  //         }
-  //       }),
-  //     );
-  //
-  //     next();
-  //   } catch (e) {
-  //     next(e);
-  //   }
-  // }
+  public async checkOldPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { body } = req;
+      const { tokenInfo } = req.res.locals;
+
+      const oldPasswords = await OldPasswordModel.findAll({
+        where: {
+          userId: tokenInfo.userId,
+        },
+      });
+
+      if (!oldPasswords) return next();
+
+      await Promise.all(
+        oldPasswords.map(async (record) => {
+          const isMatched = await passwordService.compare(
+            body.password,
+            record.getDataValue("password"),
+          );
+          if (isMatched) {
+            throw new ApiError(
+              "Your new password is the same as your old!",
+              409,
+            );
+          }
+        }),
+      );
+
+      next();
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 export const authMiddleware = new AuthMiddleware();
