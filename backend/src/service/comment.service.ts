@@ -48,14 +48,15 @@ class CommentService {
     data: IComment,
     userId: number,
     parentId?: number,
+    imageUrl?: string,
   ): Promise<any> {
     try {
       const commentData = {
         ...data,
         userId,
         parentId,
+        file: imageUrl,
       };
-
       return await CommentModel.create(commentData);
     } catch (e) {
       throw new ApiError(e.message, e.status);

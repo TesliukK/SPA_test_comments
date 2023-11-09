@@ -8,7 +8,7 @@ class CommentModel extends Model {
   public text!: string;
   public userId!: number;
   public parentId?: number;
-  public file?: string; // Додаємо поле для файлу
+  public file?: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -19,8 +19,7 @@ CommentModel.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     text: {
       type: DataTypes.STRING,
-      // allowNull: false,
-      defaultValue: "rtr",
+      allowNull: false,
     },
     userId: {
       type: DataTypes.INTEGER,
@@ -33,7 +32,6 @@ CommentModel.init(
       type: DataTypes.INTEGER,
     },
     file: {
-      // Додаємо конфігурацію для файлу
       type: DataTypes.STRING,
     },
   },

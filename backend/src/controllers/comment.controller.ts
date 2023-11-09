@@ -40,12 +40,17 @@ class CommentController {
       const parentId = req.body.parentId
         ? parseInt(req.body.parentId)
         : undefined;
-
-      const comment = await commentService.create(req.body, id, parentId);
-      const commentWithReplies = await commentService.getById(
-        comment.id.toString(),
+      const imageUrl = req.file
+        ? `/uploads/${req.file.originalname}`
+        : undefined;
+      const comment = await commentService.create(
+        { ...req.body, imageUrl },
+        id,
+        parentId,
+        imageUrl,
       );
 
+      const commentWithReplies = await commentService.getById(comment.id);
       return res.status(201).json(commentWithReplies);
     } catch (e) {
       next(e);

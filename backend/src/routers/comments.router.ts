@@ -5,6 +5,7 @@ import {
   authMiddleware,
   commentMiddleware,
   commonMiddleware,
+  upload,
   // reCaptchaMiddleware,
 } from "../middlewares";
 import { CommentModel } from "../models";
@@ -35,6 +36,7 @@ router.post(
   "/",
   authMiddleware.checkAccessToken,
   // reCaptchaMiddleware.recaptchaMiddleware,
+  upload.single("image"),
   commonMiddleware.isBodyValid(CommentValidator.createComment),
   commentController.create,
 );
