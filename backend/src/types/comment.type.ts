@@ -5,5 +5,5 @@ export interface IComment {
   text: string;
   userId: IUser;
   parentId?: number;
-  replies: IComment[];
+  responses?: IComment[];
 }

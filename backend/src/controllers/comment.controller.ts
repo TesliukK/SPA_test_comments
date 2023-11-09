@@ -38,7 +38,6 @@ class CommentController {
     try {
       const { id } = req.res.locals.jwtPayload as ITokenPayload;
       const parentId = req.body.parentId || null;
-
       const comment = await commentService.create(req.body, id, parentId);
       const commentWithReplies = await commentService.getById(
         comment.id.toString(),

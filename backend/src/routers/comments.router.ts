@@ -18,6 +18,7 @@ router.get(
   authMiddleware.checkAccessToken,
   commonMiddleware.isIdValid(CommentModel, "commentId"),
   commentMiddleware.getByIdAndThrow,
+  commentController.getById,
 );
 
 router.put(

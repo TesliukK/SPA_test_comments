@@ -32,7 +32,6 @@ class CommentService {
         (comment) => comment.get() as IComment,
       );
 
-      // Створіть об'єкт пагінації
       const pagination: IPaginationResponse<IComment> = {
         page,
         perPage: limit,

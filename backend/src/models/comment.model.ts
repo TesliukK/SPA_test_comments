@@ -1,27 +1,16 @@
 import { DataTypes, Model } from "sequelize";
 
 import sequelize from "../db";
-import { IUser } from "../types";
 import { UserModel } from "./user.model";
 
 class CommentModel extends Model {
   public id!: number;
   public text!: string;
-  public userId!: IUser;
-  public parentId?: number;
+  public userId!: number;
+  public parentId!: number | null;
 
-  public readonly replies?: CommentModel[];
-
-  static associate(models: any) {
-    CommentModel.belongsTo(models.UserModel, {
-      foreignKey: "userId",
-    });
-
-    CommentModel.hasMany(CommentModel, {
-      foreignKey: "parentId",
-      as: "replies",
-    });
-  }
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 CommentModel.init(
@@ -40,14 +29,25 @@ CommentModel.init(
     },
     parentId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      references: {
+        model: CommentModel,
+        key: "id",
+      },
     },
   },
   {
     sequelize,
     modelName: "comment",
-    tableName: "comments",
   },
 );
+
+CommentModel.belongsTo(UserModel, {
+  foreignKey: "userId",
+});
+
+CommentModel.hasMany(CommentModel, {
+  foreignKey: "parentId",
+  as: "responses",
+});
 
 export { CommentModel };
