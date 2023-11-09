@@ -4,6 +4,7 @@ import { userController } from "../controllers";
 import {
   authMiddleware,
   commonMiddleware,
+  // fileMiddleware,
   userMiddleware,
 } from "../middlewares";
 import { UserModel } from "../models";
@@ -37,4 +38,21 @@ router.delete(
   userMiddleware.getByIdAndThrow,
   userController.delete,
 );
+// ----------------------------------------------------------
+// Завантаження на aws не працює, бо заблокували акаунт
+// router.put(
+//   "/:userId/avatar",
+//   authMiddleware.checkAccessToken,
+//   commonMiddleware.isIdValid(UserModel, "userId"),
+//   fileMiddleware.isAvatarValid,
+//   userMiddleware.getByIdAndThrow,
+//   userController.uploadAvatar,
+// );
+// router.delete(
+//   "/:userId/avatar",
+//   authMiddleware.checkAccessToken,
+//   commonMiddleware.isIdValid(UserModel, "userId"),
+//   userMiddleware.getByIdAndThrow,
+//   userController.deleteAvatar,
+// );
 export const userRouter = router;

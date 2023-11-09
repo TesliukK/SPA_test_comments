@@ -1,20 +1,13 @@
 import { OrderItem } from "sequelize";
 
 import { ApiError } from "../errors";
-import { CommentModel } from "../models";
-import { IComment } from "../types";
+import { CommentModel, UserModel } from "../models";
+import { IComment, IPaginationResponse } from "../types";
 
-interface IPaginationResponse<T> {
-  page: number;
-  perPage: number;
-  itemsCount: number;
-  itemsFound: number;
-  data: T[];
-}
 class CommentService {
   public async getAll(
     page: number = 1,
-    limit: number = 10,
+    limit: number = 25,
     sortFields: string[] = ["createdAt"],
     sortOrder: "asc" | "desc" = "asc",
   ): Promise<IPaginationResponse<IComment>> {
@@ -23,24 +16,29 @@ class CommentService {
       const order: OrderItem[] = sortFields.map((field) => [field, sortOrder]);
 
       const comments = await CommentModel.findAndCountAll({
+        where: { parentId: null },
         offset,
         limit,
         order,
+        include: [
+          {
+            model: UserModel,
+            as: "user",
+          },
+        ],
       });
 
       const commentArray: IComment[] = comments.rows.map(
         (comment) => comment.get() as IComment,
       );
 
-      const pagination: IPaginationResponse<IComment> = {
+      return {
         page,
         perPage: limit,
         itemsCount: commentArray.length,
         itemsFound: comments.count,
         data: commentArray,
       };
-
-      return pagination;
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
@@ -54,8 +52,8 @@ class CommentService {
     try {
       const commentData = {
         ...data,
-        userId: userId,
-        parentId: parentId || null,
+        userId,
+        parentId,
       };
 
       return await CommentModel.create(commentData);
@@ -68,8 +66,24 @@ class CommentService {
     try {
       const comment = await CommentModel.findOne({
         where: { id: commentId },
+        include: [
+          {
+            model: UserModel,
+            as: "user",
+          },
+          {
+            model: CommentModel,
+            as: "replies",
+            include: [
+              {
+                model: UserModel,
+                as: "user",
+              },
+            ],
+          },
+        ],
       });
-      return comment.toJSON();
+      return comment?.get({ plain: true }) as IComment;
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }

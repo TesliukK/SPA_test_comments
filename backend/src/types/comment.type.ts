@@ -4,6 +4,6 @@ export interface IComment {
   id?: number;
   text: string;
   userId: IUser;
-  parentId?: number;
-  responses?: IComment[];
+  file?: string;
+  replies?: IComment[];
 }
