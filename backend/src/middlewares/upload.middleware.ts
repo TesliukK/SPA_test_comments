@@ -13,5 +13,33 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const fileFilter = (
+  _: any,
+  file: Express.Multer.File,
+  cb: (error: Error | null, acceptFile: boolean) => void,
+) => {
+  const allowedFileTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "text/plain",
+  ];
+
+  if (allowedFileTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error("Invalid file type. Only JPG, GIF, PNG, and TXT are allowed."),
+      false,
+    );
+  }
+};
+
+const limits = {
+  fileSize: 100000,
+};
+
+const upload = multer({ storage, fileFilter, limits });
+
 export { upload };

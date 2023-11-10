@@ -1,0 +1,813 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "SPA_Comments API",
+    "version": "1.0.0",
+    "description": "API for comments",
+    "contact": {
+      "email": "teslukkirill@gmail.com"
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register a new user",
+        "operationId": "register",
+        "description": "Registers a new user with the provided credentials.",
+        "parameters": [
+          {
+            "name": "nameUser",
+            "in": "formData",
+            "description": "The user name for register",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "format": "email",
+            "in": "formData",
+            "description": "The email for register",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "The password for register. It should be at least 8 characters long and include at least one letter, one digit, and one special character from @$!%_*#?&.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "login a user",
+        "operationId": "login",
+        "description": "Login users",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "The email for register",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "The password for login.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login",
+            "schema": {
+              "$ref": "#/definitions/TokenPair"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Refresh access token",
+        "operationId": "refresh",
+        "description": "Refresh the access token using a valid refresh token",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "The refresh token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token pair refreshed successfully",
+            "schema": {
+              "$ref": "#/definitions/TokenPair"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/auth/password/change": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Change user password",
+        "operationId": "changePassword",
+        "description": "Change the password for the authenticated user",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "The access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "oldPassword",
+            "in": "formData",
+            "description": "The oldPassword",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "newPassword",
+            "in": "formData",
+            "description": "The newPassword",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Password changed successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/auth/password/forgot": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Forgot password",
+        "operationId": "forgotPassword",
+        "description": "Initiate the process of resetting the user's password",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "The email for send action token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Send action token successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/auth/password/forgot/{token}": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Set new password after password reset",
+        "operationId": "setForgotPassword",
+        "description": "Set a new password after a successful password reset",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Action Token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "The new password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Password set successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/auth/activate": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Send activation token",
+        "operationId": "sendActivateToken",
+        "description": "Send an activation token to the user's email address",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "The email for send action token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Activation token sent successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/auth/activate/{token}": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Activate user account",
+        "operationId": "activate",
+        "description": "Activate the user's account using the activation token",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "The activation token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account activated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/comments": {
+      "get": {
+        "tags": ["Comments"],
+        "summary": "Get all comments",
+        "operationId": "getAllComments",
+        "description": "Get a list of all comments",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of comments per page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "sortFields",
+            "in": "query",
+            "description": "Fields to sort by (comma-separated)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sort order ('asc' or 'desc')",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of comments",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Comment"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+        "post": {
+          "tags": ["Comments"],
+          "summary": "Create a new comment",
+          "operationId": "createComment",
+          "description": "Create a new comment",
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "access token",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "text",
+              "in": "formData",
+              "description": "The text",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "parentId",
+              "in": "formData",
+              "description": "The parrentId for replies",
+              "required": false,
+              "type": "number"
+            },
+            {
+              "name": "image",
+              "in": "formData",
+              "description": "Image file for the comment (optional)",
+              "required": false,
+              "type": "file"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Comment created successfully"
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+
+    },
+
+    "/comments/{commentId}": {
+      "get": {
+        "tags": ["Comments"],
+        "summary": "Get comment by ID",
+        "operationId": "getCommentById",
+        "description": "Get a single comment by its ID",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "ID of the comment to retrieve",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Comments"],
+        "summary": "Update comment by ID",
+        "operationId": "updateCommentById",
+        "description": "Update a single comment by its ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "ID of the comment to update",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "text",
+            "in": "formData",
+            "description": "update text",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Comments"],
+        "summary": "delete comment by ID",
+        "operationId": "deleteCommentById",
+        "description": "delete a single comment by its ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "ID of the comment to retrieve",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users",
+        "operationId": "getAllUsers",
+        "description": "Get a list of all users",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "access token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by ID",
+        "operationId": "getUserById",
+        "description": "Get a single user by their ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user to retrieve",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update user by ID",
+        "operationId": "updateUserById",
+        "description": "Update a single user by their ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user to update",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "nameUser",
+            "in": "formData",
+            "description": "Updated user name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "delete user by ID",
+        "operationId": "deleteUserById",
+        "description": "delete a single user by their ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "access token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user to update",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User delete successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    }
+
+
+  },
+  "definitions": {
+    "TokenPair": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "description": "The access token"
+        },
+        "refreshToken": {
+          "type": "string",
+          "description": "The refresh token"
+        }
+      },
+      "required": ["accessToken", "refreshToken"]
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "example": 48,
+          "description": "Comment ID"
+        },
+        "text": {
+          "type": "string",
+          "example": "rhello",
+          "description": "Comment text"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "User ID associated with the comment"
+        },
+        "parentId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64",
+          "example": null,
+          "description": "ID of the parent comment (null if it's a top-level comment)"
+        },
+        "file": {
+          "type": "string",
+          "example": "/uploads/3c980dd2e9c909ada7377cc89885231b.jpg",
+          "description": "File associated with the comment (if any)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2023-11-09T22:07:09.000Z",
+          "description": "Timestamp of when the comment was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2023-11-09T22:07:09.000Z",
+          "description": "Timestamp of when the comment was last updated"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "replies": {
+          "$ref": "#/definitions/Comment"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "userId"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "User ID"
+        },
+        "nameUser": {
+          "type": "string",
+          "example": "Oleg",
+          "description": "User's name"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "user@example.com",
+          "description": "User's email address"
+        },
+        "password": {
+          "type": "string",
+          "example": "Password@123",
+          "description": "User's hashed password"
+        },
+        "avatar": {
+          "type": "string",
+          "example": null,
+          "description": "URL of the user's avatar (null if not set)"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "inactive"],
+          "description": "User's status (active or inactive)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the user was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the user was last updated"
+        }
+      },
+      "required": ["id", "nameUser", "email", "password"]
+    },
+    "Token": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "User ID associated with the token"
+        },
+        "accessToken": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsIn...",
+          "description": "Access token string"
+        },
+        "refreshToken": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsIn...",
+          "description": "Refresh token string"
+        }
+      },
+      "required": ["userId", "accessToken", "refreshToken"]
+    },
+    "OldPassword": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "User ID associated with the old password"
+        },
+        "password": {
+          "type": "string",
+          "example": "$2b$10$R5lZdFdE8amY3zS23Dm8re/ME68sHQejx2StGDbXqG4JP1Q8LDBnO",
+          "description": "Old password string"
+        }
+      },
+      "required": ["userId", "password"]
+    },
+    "ActionToken": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1,
+          "description": "User ID associated with the action token"
+        },
+        "actionToken": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsIn...",
+          "description": "Action token string"
+        },
+        "tokenType": {
+          "type": "string",
+          "example": "activate",
+          "description": "Type of action token (e.g., activate, forgot)"
+        }
+      },
+      "required": ["userId", "actionToken", "tokenType"]
+    }
+  }
+}

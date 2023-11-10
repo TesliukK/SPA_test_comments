@@ -51,6 +51,7 @@ class CommentController {
       );
 
       const commentWithReplies = await commentService.getById(comment.id);
+
       return res.status(201).json(commentWithReplies);
     } catch (e) {
       next(e);
