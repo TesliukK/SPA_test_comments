@@ -13,6 +13,6 @@ Start: `npm start`
 
 ## Документація
 Swagger
-http://localhost:5000/docs/
-там все описано
+http://localhost:5000/docs
+Весь опим проекту та всі ендпоінти на запити.
 
